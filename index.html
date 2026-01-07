@@ -468,74 +468,87 @@
         </div>
 
         <div class="max-w-5xl w-full grid md:grid-cols-2 gap-12 items-center">
-            <div class="order-1 md:order-1">
+            <div class="order-2 md:order-1">
                 <div class="hand-drawn-border bg-white p-6 relative overflow-hidden">
                     <div class="absolute top-5 left-5 text-6xl opacity-20 emoji-decoration">☕</div>
                     <!-- SVG Scene: Eiffel Tower -->
                     <svg viewBox="0 0 400 300" class="w-full h-auto">
-                        <rect width="400" height="300" fill="#f8f3ff"/>
-                        
-                        <!-- 地面 -->
-                        <ellipse cx="200" cy="285" rx="120" ry="10" fill="#d8b8e8" opacity="0.4"/>
-                        
-                        <!-- 埃菲尔铁塔主体 - 更逼真的设计 -->
-                        <!-- 底座 -->
-                        <path d="M150,280 L170,220 L230,220 L250,280 Z" fill="#8B7355" stroke="#5C4033" stroke-width="2"/>
-                        
-                        <!-- 第一层平台 -->
-                        <rect x="170" y="217" width="60" height="6" fill="#6B5A42" stroke="#5C4033" stroke-width="1.5"/>
-                        
-                        <!-- 四条主支撑腿 -->
-                        <path d="M155,280 L175,220" stroke="#5C4033" stroke-width="5" fill="none"/>
-                        <path d="M245,280 L225,220" stroke="#5C4033" stroke-width="5" fill="none"/>
-                        <path d="M165,280 L180,220" stroke="#7D6E5C" stroke-width="4" fill="none"/>
-                        <path d="M235,280 L220,220" stroke="#7D6E5C" stroke-width="4" fill="none"/>
-                        
-                        <!-- 第二段 -->
-                        <path d="M175,220 L185,150 L215,150 L225,220" fill="#8B7355" stroke="#5C4033" stroke-width="2" opacity="0.95"/>
-                        <path d="M175,220 L185,150" stroke="#5C4033" stroke-width="4" fill="none"/>
-                        <path d="M225,220 L215,150" stroke="#5C4033" stroke-width="4" fill="none"/>
-                        
-                        <!-- 第二层平台 -->
-                        <rect x="182" y="147" width="36" height="5" fill="#6B5A42" stroke="#5C4033" stroke-width="1.5"/>
-                        
-                        <!-- 横向支撑梁 -->
-                        <line x1="175" y1="200" x2="225" y2="200" stroke="#5C4033" stroke-width="2.5"/>
-                        <line x1="178" y1="180" x2="222" y2="180" stroke="#5C4033" stroke-width="2"/>
-                        <line x1="182" y1="165" x2="218" y2="165" stroke="#5C4033" stroke-width="2"/>
-                        
-                        <!-- 第三段（塔尖） -->
-                        <path d="M185,150 L195,80 L205,80 L215,150" fill="#8B7355" stroke="#5C4033" stroke-width="2" opacity="0.95"/>
-                        <path d="M185,150 L195,80" stroke="#5C4033" stroke-width="3.5" fill="none"/>
-                        <path d="M215,150 L205,80" stroke="#5C4033" stroke-width="3.5" fill="none"/>
-                        
-                        <!-- 横向支撑梁（上部） -->
-                        <line x1="187" y1="130" x2="213" y2="130" stroke="#5C4033" stroke-width="2"/>
-                        <line x1="190" y1="110" x2="210" y2="110" stroke="#5C4033" stroke-width="1.5"/>
-                        <line x1="193" y1="95" x2="207" y2="95" stroke="#5C4033" stroke-width="1.5"/>
-                        
-                        <!-- 塔尖顶部 -->
-                        <path d="M195,80 L200,40 L205,80" fill="#8B7355" stroke="#5C4033" stroke-width="2"/>
-                        <circle cx="200" cy="35" r="4" fill="#FFD700"/>
-                        <line x1="200" y1="35" x2="200" y2="20" stroke="#FFD700" stroke-width="2"/>
-                        
-                        <!-- 装饰性网格结构 -->
-                        <path d="M165,270 L175,240 M235,270 L225,240" stroke="#7D6E5C" stroke-width="1.5" opacity="0.6"/>
-                        <path d="M170,260 L180,230 M230,260 L220,230" stroke="#7D6E5C" stroke-width="1.5" opacity="0.6"/>
-                        
-                        <!-- 天空中的云朵 -->
-                        <ellipse cx="80" cy="60" rx="30" ry="18" fill="white" opacity="0.8"/>
-                        <ellipse cx="100" cy="65" rx="25" ry="15" fill="white" opacity="0.8"/>
-                        <ellipse cx="320" cy="50" rx="35" ry="20" fill="white" opacity="0.8"/>
-                        <ellipse cx="340" cy="55" rx="28" ry="16" fill="white" opacity="0.8"/>
+                        <!-- 天空渐变背景 -->
+                        <defs>
+                            <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#e8d5eb"/>
+                                <stop offset="100%" style="stop-color:#f8f0fa"/>
+                            </linearGradient>
+                        </defs>
+                        <rect width="400" height="300" fill="url(#skyGradient)"/>
                         
                         <!-- 远处的建筑剪影 -->
-                        <rect x="30" y="250" width="40" height="35" fill="#d8b8e8" opacity="0.3"/>
-                        <rect x="330" y="260" width="50" height="25" fill="#d8b8e8" opacity="0.3"/>
+                        <rect x="20" y="220" width="50" height="80" fill="#d4c4d9" opacity="0.5"/>
+                        <rect x="80" y="230" width="40" height="70" fill="#d4c4d9" opacity="0.5"/>
+                        <rect x="290" y="225" width="45" height="75" fill="#d4c4d9" opacity="0.5"/>
+                        <rect x="340" y="235" width="55" height="65" fill="#d4c4d9" opacity="0.5"/>
+                        
+                        <!-- 埃菲尔铁塔 -->
+                        <!-- 底座/拱门 -->
+                        <path d="M145,280 Q170,250 200,248 Q230,250 255,280" stroke="#5D4E37" stroke-width="6" fill="none"/>
+                        
+                        <!-- 四条主腿 -->
+                        <line x1="150" y1="280" x2="175" y2="180" stroke="#5D4E37" stroke-width="5"/>
+                        <line x1="250" y1="280" x2="225" y2="180" stroke="#5D4E37" stroke-width="5"/>
+                        <line x1="165" y1="250" x2="185" y2="180" stroke="#5D4E37" stroke-width="4"/>
+                        <line x1="235" y1="250" x2="215" y2="180" stroke="#5D4E37" stroke-width="4"/>
+                        
+                        <!-- 第一层平台 -->
+                        <rect x="165" y="175" width="70" height="10" fill="#5D4E37" rx="2"/>
+                        <line x1="165" y1="185" x2="175" y2="175" stroke="#5D4E37" stroke-width="3"/>
+                        <line x1="235" y1="185" x2="225" y2="175" stroke="#5D4E37" stroke-width="3"/>
+                        
+                        <!-- 中段腿 -->
+                        <line x1="175" y1="175" x2="188" y2="120" stroke="#5D4E37" stroke-width="4"/>
+                        <line x1="225" y1="175" x2="212" y2="120" stroke="#5D4E37" stroke-width="4"/>
+                        
+                        <!-- 第二层平台 -->
+                        <rect x="182" y="115" width="36" height="8" fill="#5D4E37" rx="2"/>
+                        
+                        <!-- 上段塔身 -->
+                        <line x1="188" y1="115" x2="195" y2="65" stroke="#5D4E37" stroke-width="3"/>
+                        <line x1="212" y1="115" x2="205" y2="65" stroke="#5D4E37" stroke-width="3"/>
+                        
+                        <!-- 顶部平台 -->
+                        <rect x="192" y="62" width="16" height="5" fill="#5D4E37" rx="1"/>
+                        
+                        <!-- 塔尖 -->
+                        <line x1="200" y1="62" x2="200" y2="38" stroke="#5D4E37" stroke-width="3"/>
+                        <circle cx="200" cy="35" r="4" fill="#FFD700"/>
+                        
+                        <!-- 横梁装饰 -->
+                        <line x1="155" y1="220" x2="245" y2="220" stroke="#5D4E37" stroke-width="2"/>
+                        <line x1="168" y1="200" x2="232" y2="200" stroke="#5D4E37" stroke-width="2"/>
+                        <line x1="178" y1="150" x2="222" y2="150" stroke="#5D4E37" stroke-width="2"/>
+                        <line x1="185" y1="95" x2="215" y2="95" stroke="#5D4E37" stroke-width="1.5"/>
+                        
+                        <!-- 交叉装饰 -->
+                        <line x1="155" y1="220" x2="168" y2="200" stroke="#5D4E37" stroke-width="1.5"/>
+                        <line x1="168" y1="220" x2="155" y2="200" stroke="#5D4E37" stroke-width="1.5"/>
+                        <line x1="245" y1="220" x2="232" y2="200" stroke="#5D4E37" stroke-width="1.5"/>
+                        <line x1="232" y1="220" x2="245" y2="200" stroke="#5D4E37" stroke-width="1.5"/>
+                        
+                        <!-- 云朵 -->
+                        <ellipse cx="80" cy="60" rx="30" ry="18" fill="white" opacity="0.8"/>
+                        <ellipse cx="100" cy="55" rx="25" ry="15" fill="white" opacity="0.8"/>
+                        <ellipse cx="330" cy="70" rx="28" ry="16" fill="white" opacity="0.8"/>
+                        <ellipse cx="355" cy="65" rx="22" ry="14" fill="white" opacity="0.8"/>
+                        
+                        <!-- 地面 -->
+                        <rect x="0" y="280" width="400" height="20" fill="#e8dde5"/>
+                        
+                        <!-- 小装饰：爱心 -->
+                        <text x="50" y="150" font-size="20" fill="#ff6b8a" opacity="0.6">♥</text>
+                        <text x="340" y="130" font-size="16" fill="#ff6b8a" opacity="0.6">♥</text>
                     </svg>
                 </div>
             </div>
-            <div class="order-2 md:order-2 space-y-4">
+            <div class="order-1 md:order-2 space-y-4">
                 <span class="bg-purple-200 text-purple-800 px-3 py-1 rounded-full text-sm font-bold">第五站：浪漫</span>
                 <h2 class="text-4xl md:text-5xl font-bold text-purple-800">欧洲 · 巴黎</h2>
                 <p class="text-xl leading-8">
