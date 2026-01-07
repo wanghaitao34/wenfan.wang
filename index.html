@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WWF的奇妙环球之旅 | Panda's World Tour</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入手绘风格中文字体 (ZCOOL KuaiLe) -->
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'ZCOOL KuaiLe', cursive;
+            overflow-x: hidden;
+            background-color: #fdfbf7; /* 纸张米色背景 */
+            scroll-behavior: smooth; /* 全局平滑滚动 */
+        }
+
+        /* 隐藏滚动条但保留功能 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888; 
+            border-radius: 4px;
+        }
+
+        /* 手绘动画效果 */
+        .hand-drawn-border {
+            border: 3px solid #333;
+            border-radius: 2% 6% 5% 4% / 1% 1% 2% 4%;
+            box-shadow: 5px 5px 0px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .hand-drawn-border:hover {
+            border-radius: 20px 250px 15px 120px / 20px 20px 15px 250px;
+            transform: scale(1.02);
+        }
+
+        /* 云朵飘动动画 */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        .float-anim {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        /* 熊猫走路/晃动动画 */
+        @keyframes wobble {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-3deg); }
+            75% { transform: rotate(3deg); }
+            100% { transform: rotate(0deg); }
+        }
+        .panda-wobble {
+            animation: wobble 2s infinite linear;
+        }
+
+        /* 印章盖章动画 */
+        @keyframes stamp-in {
+            0% { transform: scale(3) rotate(-15deg); opacity: 0; }
+            50% { transform: scale(0.9) rotate(-15deg); opacity: 1; }
+            70% { transform: scale(1.05) rotate(-15deg); }
+            100% { transform: scale(1) rotate(-15deg); opacity: 0.8; }
+        }
+        .stamp-active {
+            animation: stamp-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            display: block !important;
+        }
+
+        /* 背景纹理 */
+        .paper-texture {
+            background-image: radial-gradient(#d4d4d4 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* 章节过渡 */
+        .section-transition {
+            transition: background-color 0.8s ease;
+        }
+
+        /* 相册弹窗淡入淡出 */
+        .modal-enter {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body class="text-gray-800 paper-texture section-transition" id="main-body">
+
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 left-0 w-full z-50 p-4 transition-all duration-300" id="navbar">
+        <div class="max-w-6xl mx-auto flex justify-between items-center bg-white/90 backdrop-blur-sm border-2 border-black rounded-full px-6 py-2 shadow-lg">
+            <div class="text-2xl">🐼 WWF旅行记</div>
+            <div class="hidden md:flex space-x-6 text-lg">
+                <a href="#china" class="hover:text-red-500 transition-colors">中国</a>
+                <a href="#japan" class="hover:text-pink-500 transition-colors">日本</a>
+                <a href="#usa" class="hover:text-blue-500 transition-colors">美国</a>
+                <a href="#egypt" class="hover:text-yellow-600 transition-colors">埃及</a>
+                <a href="#europe" class="hover:text-purple-500 transition-colors">欧洲</a>
+            </div>
+            <button id="contact-btn" class="bg-black text-white px-4 py-1 rounded-full hover:bg-gray-800 transition">联系我</button>
+        </div>
+    </nav>
+
+    <!-- 固定在右下角的熊猫主角 -->
+    <div class="fixed bottom-4 right-4 z-40 w-24 h-24 md:w-32 md:h-32 transition-transform hover:scale-110 cursor-pointer panda-wobble" id="sticky-panda">
+        <!-- SVG 熊猫 -->
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="110" r="60" fill="white" stroke="black" stroke-width="6"/> <!-- 头 -->
+            <ellipse cx="70" cy="80" rx="20" ry="18" fill="black"/> <!-- 左眼黑眼圈 -->
+            <ellipse cx="130" cy="80" rx="20" ry="18" fill="black"/> <!-- 右眼黑眼圈 -->
+            <circle cx="70" cy="78" r="5" fill="white"/> <!-- 左眼珠 -->
+            <circle cx="130" cy="78" r="5" fill="white"/> <!-- 右眼珠 -->
+            <ellipse cx="100" cy="115" rx="12" ry="8" fill="black"/> <!-- 鼻子 -->
+            <path d="M 90 130 Q 100 140 110 130" stroke="black" stroke-width="4" fill="none"/> <!-- 嘴巴 -->
+            <circle cx="45" cy="55" r="20" fill="black"/> <!-- 左耳 -->
+            <circle cx="155" cy="55" r="20" fill="black"/> <!-- 右耳 -->
+            <!-- 身体简笔 -->
+            <path d="M 60 160 Q 100 200 140 160" stroke="black" stroke-width="6" fill="white"/>
+            <!-- 手 -->
+            <ellipse cx="50" cy="150" rx="15" ry="10" fill="black" transform="rotate(-30 50 150)"/>
+            <ellipse cx="150" cy="150" rx="15" ry="10" fill="black" transform="rotate(30 150 150)"/>
+        </svg>
+        <!-- 气泡对话框 -->
+        <div id="panda-dialogue" class="absolute -top-16 -left-20 bg-white border-2 border-black p-2 rounded-lg text-sm w-32 text-center opacity-0 transition-opacity duration-500 shadow-lg">
+            出发去旅行吧！
+        </div>
+    </div>
+
+    <!-- 进度条 -->
+    <div class="fixed top-0 left-0 h-2 bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 z-50 transition-all duration-100" style="width: 0%" id="progress-bar"></div>
+
+    <!-- 全屏相册 Modal -->
+    <div id="image-modal" class="fixed inset-0 z-[60] bg-black/90 flex items-center justify-center p-4 modal-enter">
+        <button id="close-modal" class="absolute top-6 right-6 text-white text-4xl hover:text-gray-300 transition">&times;</button>
+        <div class="max-w-4xl w-full max-h-screen relative">
+            <img id="modal-img" src="" alt="Album Photo" class="w-full h-auto max-h-[85vh] object-contain rounded-lg shadow-2xl border-4 border-white">
+            <p class="text-white text-center mt-4 text-xl tracking-wider" id="modal-caption">精彩瞬间</p>
+        </div>
+    </div>
+
+    <!-- 1. Hero Section -->
+    <header id="top" class="min-h-screen flex flex-col justify-center items-center text-center p-4 relative bg-yellow-50">
+        <div class="float-anim mb-8">
+            <svg width="200" height="200" viewBox="0 0 200 200">
+                <path fill="#FFD700" d="M40,100 C40,60 70,30 100,30 C130,30 160,60 160,100 C160,140 130,170 100,170 C70,170 40,140 40,100 Z" opacity="0.5"/>
+                <text x="50" y="110" font-size="80">🌍</text>
+            </svg>
+        </div>
+        <h1 class="text-5xl md:text-7xl mb-4 font-bold text-gray-800">你好，我是WWF</h1>
+        <p class="text-xl md:text-2xl text-gray-600 max-w-2xl leading-relaxed">
+            我是一只喜欢画画和旅行的熊猫。<br>
+            带上你的好奇心，和我一起环游世界吧！
+        </p>
+        <div class="mt-12 animate-bounce">
+            <p class="text-gray-400 text-sm">向下滚动开始旅程</p>
+            <svg class="w-8 h-8 mx-auto mt-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+        </div>
+    </header>
+
+    <!-- 2. 中国 China -->
+    <section id="china" class="min-h-screen flex items-center justify-center p-6 relative border-t-4 border-dashed border-red-300 bg-red-50" data-color="#FEF2F2">
+        <div class="absolute top-10 right-10 stamp-placeholder hidden opacity-0 border-4 border-red-600 text-red-600 rounded-full p-4 w-32 h-32 flex items-center justify-center font-bold text-xl rotate-12 transform" id="stamp-china">
+            <div class="text-center border-2 border-red-600 rounded-full w-full h-full flex items-center justify-center p-2">
+                入境<br>中国
+            </div>
+        </div>
+
+        <div class="max-w-5xl w-full grid md:grid-cols-2 gap-12 items-center">
+            <div class="order-2 md:order-1">
+                <div class="hand-drawn-border bg-white p-6 relative overflow-hidden">
+                    <div class="absolute -top-5 -left-5 text-6xl opacity-20">🎋</div>
+                    <!-- SVG Scene: Great Wall style -->
+                    <svg viewBox="0 0 400 300" class="w-full h-auto">
+                        <rect width="400" height="300" fill="#e6f0e6"/>
+                        <!-- Mountains -->
+                        <path d="M0,250 L100,100 L200,250 Z" fill="#cce0cc"/>
+                        <path d="M150,250 L250,120 L350,250 Z" fill="#99c299"/>
+                        <!-- Wall -->
+                        <path d="M0,280 Q200,240 400,280" stroke="#8B4513" stroke-width="20" fill="none"/>
+                        <rect x="50" y="230" width="40" height="30" fill="#A0522D"/>
+                        <rect x="150" y="210" width="40" height="30" fill="#A0522D"/>
+                        <rect x="300" y="240" width="40" height="30" fill="#A0522D"/>
+                        <!-- Sun -->
+                        <circle cx="320" cy="60" r="30" fill="#FF4500" opacity="0.8"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="order-1 md:order-2 space-y-4">
+                <span class="bg-red-200 text-red-800 px-3 py-1 rounded-full text-sm font-bold">第一站：家乡</span>
+                <h2 class="text-4xl md:text-5xl font-bold text-red-800">中国 · 北京</h2>
+                <p class="text-xl leading-8">
+                    这里是我的起点。红墙黄瓦，竹林深深。
+                    <br>我们爬上了长城，在胡同里吃了糖葫芦。
+                    <br>这里的每一块砖都诉说着千年的故事。
+                </p>
+                <button class="album-btn mt-4 border-2 border-red-800 text-red-800 px-6 py-2 rounded-full hover:bg-red-800 hover:text-white transition cursor-pointer" data-img="images/china.png" data-caption="中国：长城脚下的回忆">
+                    📸 查看相册
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. 日本 Japan -->
+    <section id="japan" class="min-h-screen flex items-center justify-center p-6 relative border-t-4 border-dashed border-pink-300 bg-pink-50" data-color="#FDF2F8">
+        <div class="absolute top-10 right-10 stamp-placeholder hidden opacity-0 border-4 border-pink-500 text-pink-500 rounded-full p-4 w-32 h-32 flex items-center justify-center font-bold text-xl rotate-12 transform" id="stamp-japan">
+            <div class="text-center border-2 border-pink-500 rounded-full w-full h-full flex items-center justify-center p-2">
+                入境<br>日本
+            </div>
+        </div>
+
+        <div class="max-w-5xl w-full grid md:grid-cols-2 gap-12 items-center">
+            <div class="space-y-4">
+                <span class="bg-pink-200 text-pink-800 px-3 py-1 rounded-full text-sm font-bold">第二站：樱花</span>
+                <h2 class="text-4xl md:text-5xl font-bold text-pink-800">日本 · 京都</h2>
+                <p class="text-xl leading-8">
+                    跨过海洋，我们来到了安静的京都。
+                    <br>樱花瓣落在我的黑白皮毛上，好像在画画。
+                    <br>在鸟居下许愿，希望能吃更多的竹子。
+                </p>
+                <button class="album-btn mt-4 border-2 border-pink-800 text-pink-800 px-6 py-2 rounded-full hover:bg-pink-800 hover:text-white transition cursor-pointer" data-img="images/japan.png" data-caption="日本：樱花树下的漫步">
+                    📸 查看相册
+                </button>
+            </div>
+            <div>
+                <div class="hand-drawn-border bg-white p-6 relative">
+                    <div class="absolute -right-5 bottom-10 text-6xl opacity-20">🌸</div>
+                    <!-- SVG Scene: Torii Gate -->
+                    <svg viewBox="0 0 400 300" class="w-full h-auto">
+                        <rect width="400" height="300" fill="#fff0f5"/>
+                        <!-- Mt Fuji Background -->
+                        <path d="M100,250 L200,80 L300,250 Z" fill="#e6e6fa"/>
+                        <path d="M170,120 L200,80 L230,120" fill="white"/>
+                        <!-- Torii -->
+                        <rect x="120" y="100" width="160" height="20" fill="#FF4500"/> <!-- Top bar -->
+                        <rect x="110" y="130" width="180" height="15" fill="#FF4500"/> <!-- Second bar -->
+                        <rect x="140" y="100" width="20" height="180" fill="#FF4500"/> <!-- Left leg -->
+                        <rect x="240" y="100" width="20" height="180" fill="#FF4500"/> <!-- Right leg -->
+                        <!-- Cherry Blossoms -->
+                        <circle cx="50" cy="50" r="10" fill="pink"/><circle cx="80" cy="90" r="8" fill="pink"/><circle cx="350" cy="60" r="12" fill="pink"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 美国 USA -->
+    <section id="usa" class="min-h-screen flex items-center justify-center p-6 relative border-t-4 border-dashed border-blue-300 bg-blue-50" data-color="#EFF6FF">
+        <div class="absolute top-10 right-10 stamp-placeholder hidden opacity-0 border-4 border-blue-600 text-blue-600 rounded-full p-4 w-32 h-32 flex items-center justify-center font-bold text-xl rotate-12 transform" id="stamp-usa">
+            <div class="text-center border-2 border-blue-600 rounded-full w-full h-full flex items-center justify-center p-2">
+                入境<br>美国
+            </div>
+        </div>
+
+        <div class="max-w-5xl w-full grid md:grid-cols-2 gap-12 items-center">
+            <div class="order-2 md:order-1">
+                <div class="hand-drawn-border bg-white p-6 relative">
+                    <div class="absolute top-5 left-5 text-6xl opacity-20">🗽</div>
+                    <!-- SVG Scene: City & Liberty -->
+                    <svg viewBox="0 0 400 300" class="w-full h-auto">
+                        <rect width="400" height="300" fill="#e8f4f8"/>
+                        
+                        <!-- 天空中的星星（美国国旗元素） -->
+                        <circle cx="30" cy="30" r="3" fill="#4169E1" opacity="0.6"/>
+                        <circle cx="60" cy="40" r="3" fill="#4169E1" opacity="0.6"/>
+                        <circle cx="90" cy="25" r="3" fill="#4169E1" opacity="0.6"/>
+                        <circle cx="50" cy="60" r="3" fill="#4169E1" opacity="0.6"/>
+                        
+                        <!-- 纽约天际线 - 更具标志性的建筑 -->
+                        <!-- 帝国大厦风格 -->
+                        <rect x="40" y="120" width="45" height="180" fill="#708090"/>
+                        <rect x="50" y="110" width="25" height="10" fill="#5F6F7F"/>
+                        <rect x="57" y="95" width="11" height="15" fill="#4682B4"/>
+                        <!-- 窗户 -->
+                        <rect x="48" y="135" width="8" height="10" fill="#FFD700" opacity="0.8"/>
+                        <rect x="60" y="135" width="8" height="10" fill="#FFD700" opacity="0.8"/>
+                        <rect x="48" y="160" width="8" height="10" fill="#FFD700" opacity="0.8"/>
+                        <rect x="60" y="160" width="8" height="10" fill="#FFD700" opacity="0.8"/>
+                        
+                        <!-- 高楼 -->
+                        <rect x="100" y="90" width="50" height="210" fill="#536878"/>
+                        <rect x="115" y="70" width="20" height="20" fill="#6495ED"/>
+                        <!-- 窗户网格 -->
+                        <rect x="108" y="110" width="8" height="12" fill="#FFE4B5" opacity="0.7"/>
+                        <rect x="120" y="110" width="8" height="12" fill="#FFE4B5" opacity="0.7"/>
+                        <rect x="134" y="110" width="8" height="12" fill="#FFE4B5" opacity="0.7"/>
+                        <rect x="108" y="145" width="8" height="12" fill="#FFE4B5" opacity="0.7"/>
+                        <rect x="120" y="145" width="8" height="12" fill="#FFE4B5" opacity="0.7"/>
+                        <rect x="134" y="145" width="8" height="12" fill="#FFE4B5" opacity="0.7"/>
+                        
+                        <!-- 中等建筑 -->
+                        <rect x="165" y="170" width="55" height="130" fill="#778899"/>
+                        <rect x="175" y="185" width="10" height="15" fill="#FFA500" opacity="0.6"/>
+                        <rect x="190" y="185" width="10" height="15" fill="#FFA500" opacity="0.6"/>
+                        <rect x="205" y="185" width="10" height="15" fill="#FFA500" opacity="0.6"/>
+                        
+                        <!-- 自由女神像 - 更详细 -->
+                        <!-- 底座 -->
+                        <rect x="280" y="240" width="70" height="60" fill="#8B7355"/>
+                        <rect x="285" y="235" width="60" height="5" fill="#A0826D"/>
+                        <!-- 身体 -->
+                        <rect x="305" y="180" width="30" height="60" fill="#7BA05B"/>
+                        <!-- 头部 -->
+                        <circle cx="320" cy="165" r="15" fill="#7BA05B"/>
+                        <!-- 皇冠（7个尖刺代表七大洲） -->
+                        <path d="M310,155 L312,140 L314,155" fill="#DAA520"/>
+                        <path d="M316,152 L318,135 L320,152" fill="#DAA520"/>
+                        <path d="M322,152 L324,135 L326,152" fill="#DAA520"/>
+                        <path d="M328,155 L330,140 L332,155" fill="#DAA520"/>
+                        <!-- 火炬 -->
+                        <line x1="340" y1="170" x2="360" y2="130" stroke="#A0826D" stroke-width="4"/>
+                        <circle cx="360" cy="125" r="10" fill="#FF6347"/>
+                        <path d="M355,120 L360,110 L365,120" fill="#FFD700"/>
+                        <!-- 书本（另一只手） -->
+                        <rect x="295" y="185" width="8" height="12" fill="#8B4513" transform="rotate(-20 299 191)"/>
+                        
+                        <!-- 水面波纹 -->
+                        <path d="M0,280 Q50,275 100,280 T200,280 T300,280 T400,280" stroke="#4682B4" stroke-width="2" fill="none" opacity="0.5"/>
+                        <path d="M0,290 Q50,285 100,290 T200,290 T300,290 T400,290" stroke="#4682B4" stroke-width="2" fill="none" opacity="0.3"/>
+                        
+                        <!-- 装饰云朵 -->
+                        <ellipse cx="350" cy="50" rx="25" ry="15" fill="white" opacity="0.7"/>
+                        <ellipse cx="370" cy="55" rx="20" ry="12" fill="white" opacity="0.7"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="order-1 md:order-2 space-y-4">
+                <span class="bg-blue-200 text-blue-800 px-3 py-1 rounded-full text-sm font-bold">第三站：摩登 都市</span>
+                <h2 class="text-4xl md:text-5xl font-bold text-blue-800">美国 · 纽约</h2>
+                <p class="text-xl leading-8">
+                    哇，这里的楼好高，脖子都仰酸了。
+                    <br>自由女神像举着火炬欢迎我们。
+                    <br>这边的披萨很好吃，但是我想念竹笋了。
+                </p>
+                <button class="album-btn mt-4 border-2 border-blue-800 text-blue-800 px-6 py-2 rounded-full hover:bg-blue-800 hover:text-white transition cursor-pointer" data-img="images/usa.png" data-caption="美国：繁华都市的角落">
+                    📸 查看相册
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. 埃及 Egypt -->
+    <section id="egypt" class="min-h-screen flex items-center justify-center p-6 relative border-t-4 border-dashed border-yellow-300 bg-yellow-50" data-color="#FFFBEB">
+        <div class="absolute top-10 right-10 stamp-placeholder hidden opacity-0 border-4 border-yellow-600 text-yellow-600 rounded-full p-4 w-32 h-32 flex items-center justify-center font-bold text-xl rotate-12 transform" id="stamp-egypt">
+            <div class="text-center border-2 border-yellow-600 rounded-full w-full h-full flex items-center justify-center p-2">
+                入境<br>埃及
+            </div>
+        </div>
+
+        <div class="max-w-5xl w-full grid md:grid-cols-2 gap-12 items-center">
+            <div class="space-y-4">
+                <span class="bg-yellow-200 text-yellow-800 px-3 py-1 rounded-full text-sm font-bold">第四站：神秘</span>
+                <h2 class="text-4xl md:text-5xl font-bold text-yellow-800">埃及 · 开罗</h2>
+                <p class="text-xl leading-8">
+                    好热啊！这里的沙子也是金黄色的。
+                    <br>金字塔是巨大的三角形，比最胖的熊猫还要稳重。
+                    <br>我遇到了一只骆驼，它走路很有趣。
+                </p>
+                <button class="album-btn mt-4 border-2 border-yellow-800 text-yellow-800 px-6 py-2 rounded-full hover:bg-yellow-800 hover:text-white transition cursor-pointer" data-img="images/egypt.png" data-caption="埃及：金字塔前的探险">
+                    📸 查看相册
+                </button>
+            </div>
+            <div>
+                <div class="hand-drawn-border bg-white p-6 relative">
+                    <div class="absolute bottom-5 right-5 text-6xl opacity-20">🐪</div>
+                    <!-- SVG Scene: Pyramids -->
+                    <svg viewBox="0 0 400 300" class="w-full h-auto">
+                        <rect width="400" height="300" fill="#fff8e1"/>
+                        <!-- Sun -->
+                        <circle cx="50" cy="50" r="30" fill="#fdd835"/>
+                        <!-- Pyramids -->
+                        <path d="M50,250 L150,100 L250,250 Z" fill="#d4a017"/> <!-- Big -->
+                        <path d="M150,250 L150,100 L200,250" fill="#b8860b"/> <!-- Shadow side -->
+                        <path d="M220,250 L300,150 L380,250 Z" fill="#d4a017"/> <!-- Small -->
+                        <!-- Ground -->
+                        <rect x="0" y="250" width="400" height="50" fill="#f4a460"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. 欧洲 Europe -->
+    <section id="europe" class="min-h-screen flex items-center justify-center p-6 relative border-t-4 border-dashed border-purple-300 bg-purple-50" data-color="#F3E8FF">
+        <div class="absolute top-10 right-10 stamp-placeholder hidden opacity-0 border-4 border-purple-600 text-purple-600 rounded-full p-4 w-32 h-32 flex items-center justify-center font-bold text-xl rotate-12 transform" id="stamp-europe">
+            <div class="text-center border-2 border-purple-600 rounded-full w-full h-full flex items-center justify-center p-2">
+                入境<br>法国
+            </div>
+        </div>
+
+        <div class="max-w-5xl w-full grid md:grid-cols-2 gap-12 items-center">
+            <div class="order-2 md:order-1">
+                <div class="hand-drawn-border bg-white p-6 relative">
+                    <div class="absolute top-5 left-5 text-6xl opacity-20">☕</div>
+                    <!-- SVG Scene: Eiffel Tower -->
+                    <svg viewBox="0 0 400 300" class="w-full h-auto">
+                        <rect width="400" height="300" fill="#f3e5f5"/>
+                        <!-- Tower -->
+                        <path d="M180,250 L200,50 L220,250" stroke="#555" stroke-width="5" fill="none"/>
+                        <path d="M160,280 L200,50 L240,280" stroke="#555" stroke-width="5" fill="none"/>
+                        <line x1="170" y1="180" x2="230" y2="180" stroke="#555" stroke-width="4"/>
+                        <line x1="190" y1="120" x2="210" y2="120" stroke="#555" stroke-width="4"/>
+                        <!-- Clouds -->
+                        <path d="M50,80 Q70,60 90,80 T130,80" fill="none" stroke="white" stroke-width="10" stroke-linecap="round"/>
+                        <path d="M300,60 Q320,40 340,60 T380,60" fill="none" stroke="white" stroke-width="10" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="order-1 md:order-2 space-y-4">
+                <span class="bg-purple-200 text-purple-800 px-3 py-1 rounded-full text-sm font-bold">第五站：浪漫</span>
+                <h2 class="text-4xl md:text-5xl font-bold text-purple-800">欧洲 · 巴黎</h2>
+                <p class="text-xl leading-8">
+                    这是法国，世界最浪漫的地方。
+                    <br>我们在铁塔下画画，在塞纳河边散步。
+                    <br>世界真大，真美。
+                </p>
+                <div class="pt-4 flex flex-col md:flex-row gap-4">
+                    <button class="album-btn bg-white border-2 border-purple-600 text-purple-600 px-8 py-3 rounded-full text-xl hover:bg-purple-50 transition shadow-lg cursor-pointer" data-img="images/europe.png" data-caption="欧洲：塞纳河畔吃法棍">
+                         📸 查看相册
+                    </button>
+                    <button id="restart-btn" class="bg-purple-600 border-2 border-purple-600 text-white px-8 py-3 rounded-full text-xl hover:bg-purple-700 transition shadow-lg transform hover:-translate-y-1">
+                        再来一次
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white p-10 text-center relative overflow-hidden">
+        <div class="max-w-4xl mx-auto z-10 relative">
+            <h3 class="text-3xl mb-4">谢谢观看WWF的旅行</h3>
+            <p class="text-gray-400 mb-8">Designed with ❤️ by WHT</p>
+            <div class="flex justify-center space-x-4">
+                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-gray-800 text-xl font-bold">P</div>
+                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-gray-800 text-xl font-bold">L</div>
+                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-gray-800 text-xl font-bold">A</div>
+                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-gray-800 text-xl font-bold">Y</div>
+            </div>
+        </div>
+        <!-- Decorative Circle -->
+        <div class="absolute -bottom-20 -right-20 w-64 h-64 bg-gray-700 rounded-full opacity-50"></div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('section');
+            const mainBody = document.getElementById('main-body');
+            const stamps = document.querySelectorAll('.stamp-placeholder');
+            const progressBar = document.getElementById('progress-bar');
+            const panda = document.getElementById('sticky-panda');
+            const pandaDialogue = document.getElementById('panda-dialogue');
+            
+            // Modal Elements
+            const modal = document.getElementById('image-modal');
+            const modalImg = document.getElementById('modal-img');
+            const modalCaption = document.getElementById('modal-caption');
+            const closeModal = document.getElementById('close-modal');
+            const albumBtns = document.querySelectorAll('.album-btn');
+            
+            // Restart Button
+            const restartBtn = document.getElementById('restart-btn');
+            
+            // Contact Button
+            const contactBtn = document.getElementById('contact-btn');
+
+            // 对话内容映射
+            const dialogues = {
+                'china': '哇！长城好壮观！',
+                'japan': '樱花飘下来了~',
+                'usa': '你好，自由女神！',
+                'egypt': '这里有点热...',
+                'europe': 'Bonjour! 巴黎！'
+            };
+
+            const observerOptions = {
+                root: null,
+                threshold: 0.5
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // 1. 触发印章动画
+                        const stamp = entry.target.querySelector('.stamp-placeholder');
+                        if (stamp && !stamp.classList.contains('stamp-active')) {
+                            // 延迟一点点显示印章，更有仪式感
+                            setTimeout(() => {
+                                stamp.classList.add('stamp-active');
+                            }, 500);
+                        }
+
+                        // 2. 熊猫说话
+                        const sectionId = entry.target.id;
+                        if(dialogues[sectionId]) {
+                            pandaDialogue.innerText = dialogues[sectionId];
+                            pandaDialogue.style.opacity = '1';
+                            // 3秒后隐藏对话框
+                            setTimeout(() => {
+                                pandaDialogue.style.opacity = '0';
+                            }, 3000);
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            // 滚动监听：进度条 + 熊猫小跳动
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.scrollY;
+                const docHeight = document.body.scrollHeight - window.innerHeight;
+                const scrollPercent = (scrollTop / docHeight) * 100;
+                progressBar.style.width = scrollPercent + '%';
+
+                const bounce = Math.sin(scrollTop / 50) * 5;
+                panda.style.transform = `translateY(${bounce}px)`;
+            });
+
+            // 点击熊猫互动
+            panda.addEventListener('click', () => {
+                panda.classList.add('animate-spin');
+                pandaDialogue.innerText = "哎呀！头晕啦！";
+                pandaDialogue.style.opacity = '1';
+                setTimeout(() => {
+                    panda.classList.remove('animate-spin');
+                    pandaDialogue.style.opacity = '0';
+                }, 1000);
+            });
+
+            // --- 相册功能逻辑 ---
+            
+            // 打开相册
+            albumBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault(); // 防止可能的跳转
+                    const imgSrc = btn.getAttribute('data-img');
+                    const caption = btn.getAttribute('data-caption');
+                    
+                    // 设置图片和文字
+                    modalImg.src = imgSrc;
+                    modalCaption.innerText = caption;
+                    
+                    // 显示 Modal
+                    modal.classList.remove('modal-enter');
+                    modal.classList.add('modal-active');
+                    
+                    // 图片加载错误处理（显示占位）
+                    modalImg.onerror = function() {
+                        this.src = 'https://via.placeholder.com/800x600?text=Image+Load+Error';
+                        modalCaption.innerText = "图片加载失败";
+                    }
+                });
+            });
+
+            // 关闭相册 (点击 X 按钮)
+            closeModal.addEventListener('click', () => {
+                modal.classList.remove('modal-active');
+                modal.classList.add('modal-enter');
+                // 清空 src 停止加载
+                setTimeout(() => { modalImg.src = ''; }, 300);
+            });
+
+            // 关闭相册 (点击背景)
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('modal-active');
+                    modal.classList.add('modal-enter');
+                    setTimeout(() => { modalImg.src = ''; }, 300);
+                }
+            });
+            
+            // ESC 键关闭
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('modal-active')) {
+                    modal.classList.remove('modal-active');
+                    modal.classList.add('modal-enter');
+                }
+            });
+
+            // --- 再来一次按钮逻辑 ---
+            if (restartBtn) {
+                restartBtn.addEventListener('click', () => {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                    
+                    // 可选：重置印章状态，下次滚动再显示
+                    setTimeout(() => {
+                        document.querySelectorAll('.stamp-active').forEach(el => {
+                            el.classList.remove('stamp-active');
+                        });
+                        // 重置对话框
+                        pandaDialogue.innerText = "出发去旅行吧！";
+                    }, 1000);
+                });
+            }
+
+            // --- 联系我按钮逻辑 ---
+            if (contactBtn) {
+                contactBtn.addEventListener('click', () => {
+                    alert('我还太小，还没有联系方式呢🐼');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
