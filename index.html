@@ -35,11 +35,13 @@
             border-radius: 2% 6% 5% 4% / 1% 1% 2% 4%;
             box-shadow: 5px 5px 0px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
+            overflow: hidden;
         }
         
         .hand-drawn-border:hover {
             border-radius: 20px 250px 15px 120px / 20px 20px 15px 250px;
-            transform: scale(1.02);
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
         }
 
         /* 云朵飘动动画 */
@@ -53,14 +55,30 @@
         }
 
         /* 熊猫走路/晃动动画 */
-        @keyframes wobble {
-            0% { transform: rotate(0deg); }
-            25% { transform: rotate(-3deg); }
-            75% { transform: rotate(3deg); }
-            100% { transform: rotate(0deg); }
+        @keyframes panda-bounce {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-8px) rotate(-2deg); }
+            50% { transform: translateY(0px) rotate(0deg); }
+            75% { transform: translateY(-5px) rotate(2deg); }
         }
-        .panda-wobble {
-            animation: wobble 2s infinite linear;
+        
+        #sticky-panda {
+            animation: panda-bounce 3s ease-in-out infinite;
+        }
+        
+        #sticky-panda:hover {
+            animation: panda-bounce 0.6s ease-in-out infinite;
+        }
+        
+        /* 熊猫点击旋转效果 */
+        @keyframes panda-spin-jump {
+            0% { transform: translateY(0) rotate(0deg) scale(1); }
+            50% { transform: translateY(-30px) rotate(180deg) scale(1.1); }
+            100% { transform: translateY(0) rotate(360deg) scale(1); }
+        }
+        
+        .panda-spinning {
+            animation: panda-spin-jump 0.8s ease-in-out !important;
         }
 
         /* 印章盖章动画 */
@@ -96,6 +114,15 @@
             opacity: 1;
             pointer-events: auto;
         }
+
+        /* Emoji装饰动画 */
+        .emoji-decoration {
+            transition: all 0.4s ease;
+        }
+        .hand-drawn-border:hover .emoji-decoration {
+            transform: scale(1.3) rotate(10deg);
+            opacity: 0.4 !important;
+        }
     </style>
 </head>
 <body class="text-gray-800 paper-texture section-transition" id="main-body">
@@ -115,27 +142,64 @@
         </div>
     </nav>
 
-    <!-- 固定在右下角的熊猫主角 -->
-    <div class="fixed bottom-4 right-4 z-40 w-24 h-24 md:w-32 md:h-32 transition-transform hover:scale-110 cursor-pointer panda-wobble" id="sticky-panda">
-        <!-- SVG 熊猫 -->
-        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="100" cy="110" r="60" fill="white" stroke="black" stroke-width="6"/> <!-- 头 -->
-            <ellipse cx="70" cy="80" rx="20" ry="18" fill="black"/> <!-- 左眼黑眼圈 -->
-            <ellipse cx="130" cy="80" rx="20" ry="18" fill="black"/> <!-- 右眼黑眼圈 -->
-            <circle cx="70" cy="78" r="5" fill="white"/> <!-- 左眼珠 -->
-            <circle cx="130" cy="78" r="5" fill="white"/> <!-- 右眼珠 -->
-            <ellipse cx="100" cy="115" rx="12" ry="8" fill="black"/> <!-- 鼻子 -->
-            <path d="M 90 130 Q 100 140 110 130" stroke="black" stroke-width="4" fill="none"/> <!-- 嘴巴 -->
-            <circle cx="45" cy="55" r="20" fill="black"/> <!-- 左耳 -->
-            <circle cx="155" cy="55" r="20" fill="black"/> <!-- 右耳 -->
-            <!-- 身体简笔 -->
-            <path d="M 60 160 Q 100 200 140 160" stroke="black" stroke-width="6" fill="white"/>
-            <!-- 手 -->
-            <ellipse cx="50" cy="150" rx="15" ry="10" fill="black" transform="rotate(-30 50 150)"/>
-            <ellipse cx="150" cy="150" rx="15" ry="10" fill="black" transform="rotate(30 150 150)"/>
+    <!-- 固定在右下角的熊猫主角容器 -->
+    <div class="fixed bottom-4 right-4 z-40" id="panda-container">
+        <!-- 熊猫主体 -->
+        <div class="w-28 h-28 md:w-36 md:h-36 transition-all duration-300 hover:scale-110 cursor-pointer" id="sticky-panda">
+        <!-- SVG 超可爱Q版熊猫 -->
+        <svg viewBox="0 0 200 230" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-lg">
+            <!-- 身体（圆滚滚） -->
+            <ellipse cx="100" cy="155" rx="42" ry="48" fill="white" stroke="black" stroke-width="4"/>
+            
+            <!-- 左手臂 -->
+            <circle cx="62" cy="145" r="18" fill="black"/>
+            
+            <!-- 右手臂 -->
+            <circle cx="138" cy="145" r="18" fill="black"/>
+            
+            <!-- 左脚 -->
+            <ellipse cx="80" cy="200" rx="18" ry="15" fill="black"/>
+            
+            <!-- 右脚 -->
+            <ellipse cx="120" cy="200" rx="18" ry="15" fill="black"/>
+            
+            <!-- 左耳 -->
+            <circle cx="60" cy="50" r="20" fill="black"/>
+            
+            <!-- 右耳 -->
+            <circle cx="140" cy="50" r="20" fill="black"/>
+            
+            <!-- 头部（大大的圆脑袋） -->
+            <circle cx="100" cy="75" r="50" fill="white" stroke="black" stroke-width="4"/>
+            
+            <!-- 左眼（超大黑眼圈） -->
+            <ellipse cx="78" cy="72" rx="16" ry="20" fill="black"/>
+            <!-- 左眼白 -->
+            <circle cx="78" cy="70" r="7" fill="white"/>
+            <!-- 左眼珠 -->
+            <circle cx="80" cy="70" r="3.5" fill="black"/>
+            
+            <!-- 右眼（超大黑眼圈） -->
+            <ellipse cx="122" cy="72" rx="16" ry="20" fill="black"/>
+            <!-- 右眼白 -->
+            <circle cx="122" cy="70" r="7" fill="white"/>
+            <!-- 右眼珠 -->
+            <circle cx="124" cy="70" r="3.5" fill="black"/>
+            
+            <!-- 鼻子 -->
+            <ellipse cx="100" cy="88" rx="6" ry="5" fill="black"/>
+            <line x1="100" y1="88" x2="100" y2="95" stroke="black" stroke-width="2"/>
+            
+            <!-- 可爱W型嘴巴 -->
+            <path d="M 88 100 Q 94 104 100 100 Q 106 104 112 100" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            
+            <!-- 腮红 -->
+            <circle cx="58" cy="85" r="8" fill="#FFB6C1" opacity="0.6"/>
+            <circle cx="142" cy="85" r="8" fill="#FFB6C1" opacity="0.6"/>
         </svg>
-        <!-- 气泡对话框 -->
-        <div id="panda-dialogue" class="absolute -top-16 -left-20 bg-white border-2 border-black p-2 rounded-lg text-sm w-32 text-center opacity-0 transition-opacity duration-500 shadow-lg">
+        </div>
+        <!-- 气泡对话框（独立，不随熊猫旋转） -->
+        <div id="panda-dialogue" class="absolute -top-20 -left-24 bg-white border-2 border-black px-3 py-2 rounded-lg text-base w-36 text-center opacity-0 transition-opacity duration-500 shadow-lg z-50">
             出发去旅行吧！
         </div>
     </div>
@@ -146,8 +210,10 @@
     <!-- 全屏相册 Modal -->
     <div id="image-modal" class="fixed inset-0 z-[60] bg-black/90 flex items-center justify-center p-4 modal-enter">
         <button id="close-modal" class="absolute top-6 right-6 text-white text-4xl hover:text-gray-300 transition">&times;</button>
-        <div class="max-w-4xl w-full max-h-screen relative">
-            <img id="modal-img" src="" alt="Album Photo" class="w-full h-auto max-h-[85vh] object-contain rounded-lg shadow-2xl border-4 border-white">
+        <div class="max-w-4xl w-full max-h-screen relative flex flex-col items-center">
+            <div class="bg-white p-4 rounded-2xl shadow-2xl">
+                <img id="modal-img" src="" alt="Album Photo" class="max-w-full h-auto max-h-[75vh] object-contain rounded-xl">
+            </div>
             <p class="text-white text-center mt-4 text-xl tracking-wider" id="modal-caption">精彩瞬间</p>
         </div>
     </div>
@@ -182,7 +248,7 @@
         <div class="max-w-5xl w-full grid md:grid-cols-2 gap-12 items-center">
             <div class="order-2 md:order-1">
                 <div class="hand-drawn-border bg-white p-6 relative overflow-hidden">
-                    <div class="absolute -top-5 -left-5 text-6xl opacity-20">🎋</div>
+                    <div class="absolute -top-5 -left-5 text-6xl opacity-20 emoji-decoration">🎋</div>
                     <!-- SVG Scene: Great Wall style -->
                     <svg viewBox="0 0 400 300" class="w-full h-auto">
                         <rect width="400" height="300" fill="#e6f0e6"/>
@@ -236,8 +302,8 @@
                 </button>
             </div>
             <div>
-                <div class="hand-drawn-border bg-white p-6 relative">
-                    <div class="absolute -right-5 bottom-10 text-6xl opacity-20">🌸</div>
+                <div class="hand-drawn-border bg-white p-6 relative overflow-hidden">
+                    <div class="absolute -right-5 bottom-10 text-6xl opacity-20 emoji-decoration">🌸</div>
                     <!-- SVG Scene: Torii Gate -->
                     <svg viewBox="0 0 400 300" class="w-full h-auto">
                         <rect width="400" height="300" fill="#fff0f5"/>
@@ -267,8 +333,8 @@
 
         <div class="max-w-5xl w-full grid md:grid-cols-2 gap-12 items-center">
             <div class="order-2 md:order-1">
-                <div class="hand-drawn-border bg-white p-6 relative">
-                    <div class="absolute top-5 left-5 text-6xl opacity-20">🗽</div>
+                <div class="hand-drawn-border bg-white p-6 relative overflow-hidden">
+                    <div class="absolute top-5 right-5 text-6xl opacity-20 emoji-decoration">🗽</div>
                     <!-- SVG Scene: City & Liberty -->
                     <svg viewBox="0 0 400 300" class="w-full h-auto">
                         <rect width="400" height="300" fill="#e8f4f8"/>
@@ -374,8 +440,8 @@
                 </button>
             </div>
             <div>
-                <div class="hand-drawn-border bg-white p-6 relative">
-                    <div class="absolute bottom-5 right-5 text-6xl opacity-20">🐪</div>
+                <div class="hand-drawn-border bg-white p-6 relative overflow-hidden">
+                    <div class="absolute bottom-5 right-5 text-6xl opacity-20 emoji-decoration">🐪</div>
                     <!-- SVG Scene: Pyramids -->
                     <svg viewBox="0 0 400 300" class="w-full h-auto">
                         <rect width="400" height="300" fill="#fff8e1"/>
@@ -403,8 +469,8 @@
 
         <div class="max-w-5xl w-full grid md:grid-cols-2 gap-12 items-center">
             <div class="order-2 md:order-1">
-                <div class="hand-drawn-border bg-white p-6 relative">
-                    <div class="absolute top-5 left-5 text-6xl opacity-20">☕</div>
+                <div class="hand-drawn-border bg-white p-6 relative overflow-hidden">
+                    <div class="absolute top-5 left-5 text-6xl opacity-20 emoji-decoration">☕</div>
                     <!-- SVG Scene: Eiffel Tower -->
                     <svg viewBox="0 0 400 300" class="w-full h-auto">
                         <rect width="400" height="300" fill="#f3e5f5"/>
@@ -534,13 +600,14 @@
 
             // 点击熊猫互动
             panda.addEventListener('click', () => {
-                panda.classList.add('animate-spin');
-                pandaDialogue.innerText = "哎呀！头晕啦！";
+                panda.classList.add('panda-spinning');
+                const messages = ["哎呀！头晕啦！", "呜呜～转圈圈！", "再转一圈！🎡", "好玩！😄"];
+                pandaDialogue.innerText = messages[Math.floor(Math.random() * messages.length)];
                 pandaDialogue.style.opacity = '1';
                 setTimeout(() => {
-                    panda.classList.remove('animate-spin');
+                    panda.classList.remove('panda-spinning');
                     pandaDialogue.style.opacity = '0';
-                }, 1000);
+                }, 800);
             });
 
             // --- 相册功能逻辑 ---
